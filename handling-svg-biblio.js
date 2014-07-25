@@ -190,34 +190,6 @@ function number_icon_in(room){
     });
     return number;
 }
-/* 
- * Fonction qui dit si
- * la salle a atteint le 
- * nombre maximum de capteurs
- * @param salle la salle à vérifier
- * @return n le nombre d'élément dans la salle ou false
- *
-function room_is_full(salle){
-    var array_icons = $("#"+salle+">g>image");
-    var n = 0;
-    array_icons.each(function(){
-        n++;
-    });
-    if(n>1) return n;
-    return false;
-}
-
-function room_is_full_remove(salle){
-    var array_icons = $("#"+salle+">g>image");
-    n = 0;
-    array_icons.each(function(){
-        n++;
-    });
-    if((n-1)>1){
-        return n-1;
-    }
-    return false;
-}*/
 
 /*
  * Fonction qui remplace l'ensemble des capteur
@@ -244,7 +216,6 @@ function update_circles(node,salle,x,y,width,height){
         $("#text-"+salle).remove();
     }
     create_circle(node,salle,title,x,y,width,height,number_icon_in(salle));
-    
 }
 
 /*
@@ -370,6 +341,12 @@ function relocate(url_json){
     });
 }
 
+/*
+ * Fonction qui affiche par un 
+ * code couleur (rouge/vert)
+ * la disponibilité des salles d'un 
+ * batiment
+ */
 function update_free_rooms(url_json){
     $.getJSON(url_json,function( data ){
         var salles = data.salles;
