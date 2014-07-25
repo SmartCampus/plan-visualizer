@@ -99,6 +99,7 @@ function load_svg(url,id,url_json,callback,arg1,arg2){
 function unput_sensors(kind_wanted,url_json){
     $.getJSON( url_json, function( data ) {
         var sensors = data.sensors;
+        d3.select('svg').selectAll("."+kind_wanted).remove();
         for(i=0;i<sensors.length;i++){
             var kind = sensors[i].kind;
             var salle = sensors[i].salle;
@@ -114,16 +115,17 @@ function unput_sensors(kind_wanted,url_json){
                 x = parseFloat(salle_svg.attr('x'));
                 y = parseFloat(salle_svg.attr('y'));
             }
-            d3.select('svg').selectAll("."+kind_wanted).remove();
-            var n;
-            if((n=room_is_full_remove(salle,0)) != false){
-                insert_icon_group(kind,status,bat,salle,x,y,size_x,size_y,node_to_insert,n);
+            console.log(number_icon_in(salle)+" in "+salle);
+            if(number_icon_in(salle) == 2){
+                $("#"+salle+">g>circle").remove();
+                $("#"+salle+">g>text").remove();
+                $("#"+salle+">g>image").show();
             }
-            else{
-                d3.select('svg').selectAll(".group").remove();
-                $('.img-icons').show();
+            else if(number_icon_in(salle) > 2){
+                update_circles(node_to_insert,salle,x,y,size_x,size_y);
             }
         }
+        
         relocate(url_json);
     });
 }
@@ -140,10 +142,11 @@ function put_sensors(kind_wanted,url_json){
         var list_sensors = data.sensors;
         var svg_node = d3.select('body').select('svg');
         for(i=0;i<list_sensors.length;i++){
-            var kind = list_sensors[i].kind;
-            var bat = list_sensors[i].bat;
-            var status = list_sensors[i].value;
-            var salle = list_sensors[i].salle;
+            var sensor = list_sensors[i];
+            var kind = sensor.kind;
+            var bat = sensor.bat;
+            var status = sensor.value;
+            var salle = sensor.salle;
             var node_to_insert = d3.select('body').select('svg').select("#"+salle+">g");
             var salle_svg = $("#"+salle+">g").children().eq(0);
 
