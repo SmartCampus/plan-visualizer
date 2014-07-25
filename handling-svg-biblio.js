@@ -157,12 +157,12 @@ function put_sensors(kind_wanted,url_json){
                 x = parseFloat(salle_svg.attr('x'));
                 y = parseFloat(salle_svg.attr('y'));
             }
-            var n = 0;
+            var n = number_icon_in(salle);
             if(kind == kind_wanted){
-                if((n= room_is_full(salle)) != false){
+                if((n+1) > 2){
                     // trop de capteurs à afficher -> on regroupe
                     insert_icon(kind,status,salle,bat,x,y,node_to_insert);
-                    insert_icon_group(kind,status,bat,salle,x,y,size_x,size_y,node_to_insert,n);
+                    update_circles(node_to_insert,salle,x,y,size_x,size_y);
                 }
                 else{
                     insert_icon(kind,status,salle,bat,x,y,node_to_insert);
@@ -172,13 +172,28 @@ function put_sensors(kind_wanted,url_json){
         relocate(url_json);
     });
 }
+
+/*
+ * Fonction qui donne le nombre
+ * de capteurs à afficher dans une salle.
+ * @param room la salle à verifier
+ * @return number le nombre de capteurs à afficher dans la salle
+ */
+function number_icon_in(room){
+    var number = 0;
+    var icons_room = $("#"+room+">g>image");
+    icons_room.each(function(){
+        number++;
+    });
+    return number;
+}
 /* 
  * Fonction qui dit si
  * la salle a atteint le 
  * nombre maximum de capteurs
  * @param salle la salle à vérifier
  * @return n le nombre d'élément dans la salle ou false
- */
+ *
 function room_is_full(salle){
     var array_icons = $("#"+salle+">g>image");
     var n = 0;
@@ -199,23 +214,20 @@ function room_is_full_remove(salle){
         return n-1;
     }
     return false;
-}
+}*/
 
 /*
  * Fonction qui remplace l'ensemble des capteur
  * en les groupant sur un seul icone, affichant la liste de 
  * tous les capteurs dans tooltip, masque les autres capteurs
- * @param kind le type de capteur
- * @param status l'état du capteur
- * @param bat le batiment ou se situe la salle
  * @param salle l'id de la salle où se situe le capteur
  * @param x la position x de la salle
  * @param y la position y de la salle
- * @param size_x la largeur de la salle
- * @param size_y la hauteur de la salle
- * @param node_to_insert le noeud correspondant à la salle (svg)
+ * @param width la largeur de la salle
+ * @param height la hauteur de la salle
+ * @param node le noeud correspondant à la salle (svg)
  */
-function insert_icon_group(kind,status,bat,salle,x,y,size_x,size_y,node_to_insert,n){
+function update_circles(node,salle,x,y,width,height){
     var array_icons = $("#"+salle+">g>image");
     var title = "";
     /* on récupère les titles de tous les autres capteurs de la salle */
@@ -228,25 +240,43 @@ function insert_icon_group(kind,status,bat,salle,x,y,size_x,size_y,node_to_inser
         existing_circle.remove();
         $("#text-"+salle).remove();
     }
-    node_to_insert.append("text")
-            .attr('x', x+size_x/2-5)
-            .attr('y', y+size_y/2+5)
+    create_circle(node,salle,title,x,y,width,height,number_icon_in(salle));
+    
+}
+
+/*
+ * Fonction qui crée le cercle avec 
+ * le title donnant les informations
+ * sur l'ensemble des capteurs 
+ * représentés par le cercle
+ * @param node le noeud svg où insérer le cercle et son texte
+ * @param room l'id de la salle où le cercle sera inséré
+ * @param x la position x de la salle
+ * @param y la position y de la salle
+ * @param width largeur de la salle
+ * @param height hauteut de la salle
+ * @param number le nombre de capteur groupé
+ */
+function create_circle(node,room,title,x,y,width,height,number){
+    node.append("text")
+            .attr('x', x+width/2-5)
+            .attr('y', y+height/2+5)
             .attr('fill','black')
-            .text(n+1)
+            .text(number)
             .attr('class','group')
             .attr('title',title)
-            .attr('id','text-'+salle);
-     node_to_insert.append("circle")
+            .attr('id','text-'+room);
+     node.append("circle")
             .attr('r', 10)
-            .attr('id', 'circle-'+salle)
-            .attr('cx', x+size_x/2)
-            .attr('cy', y+size_y/2)
+            .attr('id', 'circle-'+room)
+            .attr('cx', x+width/2)
+            .attr('cy', y+height/2)
             .attr('title',title)
             .attr('class','group')
             .style('stroke','black')
             .style('fill','blue')
             .style('fill-opacity',0.6);
-    init_tooltip("#circle-"+salle);
+    init_tooltip("#circle-"+room);
 }
 
 /*
@@ -281,7 +311,7 @@ function insert_icon(kind,true_status,salle,bat,x,y,node_to_insert){
     else{
         var img = d3.select('#img-'+kind+salle);
         var title = img.attr('title');
-        img.attr('title',title+'<br/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+status);
+        img.attr('title',title+'<br/><img alt="img-capteur" src="./img/'+kind+"-"+status+'.png" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+status);
     }
 }
 
