@@ -13,6 +13,8 @@ Insérer ces lignes dans votre fichier HTML pour importer la lib:
 ```html
 <!-- Jquery librairies -->
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> 
+<!-- Bibliotèque D3.js -->
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
 <!-- Le fichier javascript -->
 <script type="text/javascript" src="svg_bibli/handling-svg-biblio.js"></script>
 <!-- Le fichier CSS (utile seulement quand les infobulles sont utilisées) -->
@@ -22,12 +24,13 @@ Insérer ces lignes dans votre fichier HTML pour importer la lib:
 
 ### Les fonctions
 
-\# **load_svg(url,id,url_json,callback,arg1,arg2)**:
+\# **load_svg(url,id,url_json,callback_load,callback_handle,arg1,arg2)**:
 charge un fichier svg dans un élément HTML:
 - **url** est l'adresse du fichier svg à charger
 - **id** est l'`id` de l'élément `HTML` où le fichier svg sera inséré
 - **url_json** (option) est l'adresse du fichier `JSON`à charger lors d'un appel `callback()`
-- **callback** (option) est la fonction callback à appeler après le chargement du fichier svg (en effet le chargement du fichier svg est exécuté grâce à une méthode asynchrone, il est donc nécessaire d'utiliser une méthode dite `callback`pour que le fichier svg soit bien chargé avant de faire un traitement sur celui-ci)
+- **callback_load** (option) est la fonction callback à appeler après le chargement du fichier svg (en effet le chargement du fichier svg est exécuté grâce à une méthode asynchrone, il est donc nécessaire d'utiliser une méthode dite `callback`pour que le fichier svg soit bien chargé avant de faire un traitement sur celui-ci). Cette fonction charge un fichier json, on peut ensuite traiter les données récupérée dans un autre appel `callback()`
+- **callback_handle** (option) est la fonction `callback()` à appeler après le chargement de l'appel **callback_handle()**
 - **arg1** et **arg2** (option) sont des arguments pour la fonction `callback`, si aucun argument n'est passé, la fonction `callback` sera appelé sans argument, si les deux arguements sont passé alors la fonction `callback` sera appelé 2 fois (une fois par argument)
 
 #### Exemple d'utilisation :
@@ -43,15 +46,57 @@ charge un fichier svg dans un élément HTML:
  */
  
  $("#security").ready(function(){
-    load_svg("plan.svg","security","alertes.json",put_sensors,"door","window");
+    load_svg("plan.svg","security","alertes.json",load_and_launch,put_sensors,"door","window");
 });
 ```
 -----------------
 
 
-\# **put_sensors(kind,url)**:
-Insère des images (correspondants à des capteurs) sur le fichier svg
+\# **load_and_launch(url,callback,arg)**:
+Charge un fichier JSON et appel une fonction `callback` pour faire le traitement:
 - **url** est l'adresse du fichier json à utiliser
+- **callback** est la fonction de traitement à appeler après le chargement
+- **arg** un argument de la fonction `callback`
+
+#### Exemple d'utilisation :
+```javascript
+/* Pour l'affichage d'un dashboard dont on souhaite afficher les capteurs 
+ * de portes :
+ * Le fichier JSON 'sensors.json' contient la liste de tous les capteurs
+ * du bâtiment chargé.
+ * On utilise la fonction put_sensors() pour ajouter des capteurs sur le plan svg
+ * 
+ * L'appel de fonction est le suivant :
+ */
+ 
+ load_and_launch("sensors.json",put_sensors,"door");
+```
+-----------------
+
+
+\# **put_sensors(sensors,kind)**:
+Insère des images (correspondants à des capteurs) sur le fichier svg
+- **sensors** est la variable contenant un fichier JSON chargé préalablement.
+> **le format du fichier JSON est le suivant:**
+{"id":"list-sensors","sensors":[
+    {"id":`id_sensor`,
+     "kind":`le type de capteur`,
+     "value":`valeur`,
+     "bat":`bâtiment`,
+     "floor":`étage`,
+     "salle":`id_salle`,
+     "location":`position dans la salle`
+    },
+    {"id":`id_sensor`,
+     "kind":`le type de capteur`,
+     "value":`valeur`,
+     "bat":`bâtiment`,
+     "floor":`étage`,
+     "salle":`id_salle`,
+     "location":`position dans la salle`
+    }
+]}
+
 - **kind** est le type de capteurs à afficher (attribut présent dans le json pour le test)
 
 #### Exemple d'utilisation :
@@ -60,28 +105,98 @@ Insère des images (correspondants à des capteurs) sur le fichier svg
  * de portes :
  * Le fichier JSON 'sensors.json' contient la liste de tous les capteurs
  * du bâtiment chargé.
+ * La variable 'sensors' a déjà été chargé préalablement
+ * (c'est une variable JSON en js)
  * 
  * L'appel de fonction est le suivant :
  */
  
- put_sensors("door","sensors.json");
+ put_sensors(sensors,"door");
 ```
+
 -----------------
 
-\# **unput_sensors(kind,url)**:
+\# **unput_sensors(sensors,kind)**:
 Enlève les images (correspondants à des capteurs) sur le fichier svg
-- **url** est l'adresse du fichier json à utiliser
+- **sensors** est la variable contenant un fichier JSON chargé préalablement.
+> **le format du fichier JSON est le suivant:**
+{"id":"list-sensors","sensors":[
+    {"id":`id_sensor`,
+     "kind":`le type de capteur`,
+     "value":`valeur`,
+     "bat":`bâtiment`,
+     "floor":`étage`,
+     "salle":`id_salle`,
+     "location":`position dans la salle`
+    },
+    {"id":`id_sensor`,
+     "kind":`le type de capteur`,
+     "value":`valeur`,
+     "bat":`bâtiment`,
+     "floor":`étage`,
+     "salle":`id_salle`,
+     "location":`position dans la salle`
+    }
+]}
+
 - **kind** est le type de capteurs à afficher (attribut présent dans le json pour le test)
 
 #### Exemple d'utilisation :
 ```javascript
-/* Pour enlever l'affichage des capteurs de présence sur le plan svg.
+/* Pour l'affichage d'un dashboard qui contient déjà les capteurs 
+ * de portes, on souhaite les enlever:
  * Le fichier JSON 'sensors.json' contient la liste de tous les capteurs
  * du bâtiment chargé.
+ * La variable 'sensors' a déjà été chargé préalablement
+ * (c'est une variable JSON en js)
  * 
  * L'appel de fonction est le suivant :
  */
  
- unput_sensors("motion","sensors.json");
+ unput_sensors(sensors,"door");
 ```
 -----------------
+\# **update_free_rooms(sensors)**:
+Colore les salles du plan svg chargé en rouge/vert selon la disponibilité de la salle.
+- **sensors** est la variable contenant un fichier JSON chargé préalablement.
+> **le format du fichier JSON est le suivant:**
+{"id":"salles",
+ "sensors":[
+     {"id_salle": `id de la salle`,
+      "value":`true`ou `false`},
+{"id_salle": `id de la salle`,
+      "value":`true`ou `false`},
+{"id_salle": `id de la salle`,
+      "value":`true`ou `false`}...
+]}
+
+-----------------
+\# **init_heatmap(data,title,max)**:
+Affiche une carte de chaleur dans un canvas par dessus le plan svg chargé.
+- **data** les valeurs pour la carte de chaleur
+##### **Le format des données est le suivant:**
+```javascript
+/* data est une variable JSON en javascript, exemple :*/
+data = [
+        { x : 10,
+          y : 10,
+         count : 32 },
+        { x : 15,
+          y : 20,
+         count : 55 },
+        { x : 23,
+          y : 32,
+         count : 45 }
+];
+/*
+ * x est la position horizontale de la valeur
+ * y est la position verticale de la valeur
+ * count est la valeur
+ * /
+```
+- **title** est la légende de la carte de chaleur
+- **max** est la valeur maximum de la carte de chaleur
+
+-----------------
+
+
