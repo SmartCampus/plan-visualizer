@@ -2,7 +2,8 @@ Descriptif de bibliothèque de traitement d'un fichier svg
 =====================
 
 
-Vous pouvez voir ci dessous l'ensemble des fonctions utilisables dans la bibliothèque et leur fonctionnement.
+Vous pouvez voir ci dessous l'ensemble des fonctions utilisables dans la bibliothèque et leur fonctionnement. Le principe de cette bibliothèque est de charger un fichier svg (le plan d'un bâtiment) pour ensuite faire des traitement (ex: ajouter des icones dans les salles, colorier les salles ... etc).
+Cette bibliothèque utilise [Jquery][1] ainsi que la librairie [D3.js][2]
 
 ----------
 
@@ -77,7 +78,9 @@ Charge un fichier JSON et appel une fonction `callback` pour faire le traitement
 \# **put_sensors(sensors,kind)**:
 Insère des images (correspondants à des capteurs) sur le fichier svg
 - **sensors** est la variable contenant un fichier JSON chargé préalablement.
-> **le format du fichier JSON est le suivant:**
+
+**le format du fichier JSON est le suivant:**
+```json
 {"id":"list-sensors","sensors":[
     {"id":`id_sensor`,
      "kind":`le type de capteur`,
@@ -96,6 +99,7 @@ Insère des images (correspondants à des capteurs) sur le fichier svg
      "location":`position dans la salle`
     }
 ]}
+```
 
 - **kind** est le type de capteurs à afficher (attribut présent dans le json pour le test)
 
@@ -119,7 +123,9 @@ Insère des images (correspondants à des capteurs) sur le fichier svg
 \# **unput_sensors(sensors,kind)**:
 Enlève les images (correspondants à des capteurs) sur le fichier svg
 - **sensors** est la variable contenant un fichier JSON chargé préalablement.
-> **le format du fichier JSON est le suivant:**
+
+ **le format du fichier JSON est le suivant:**
+```json
 {"id":"list-sensors","sensors":[
     {"id":`id_sensor`,
      "kind":`le type de capteur`,
@@ -138,6 +144,7 @@ Enlève les images (correspondants à des capteurs) sur le fichier svg
      "location":`position dans la salle`
     }
 ]}
+```
 
 - **kind** est le type de capteurs à afficher (attribut présent dans le json pour le test)
 
@@ -159,7 +166,9 @@ Enlève les images (correspondants à des capteurs) sur le fichier svg
 \# **update_free_rooms(sensors)**:
 Colore les salles du plan svg chargé en rouge/vert selon la disponibilité de la salle.
 - **sensors** est la variable contenant un fichier JSON chargé préalablement.
-> **le format du fichier JSON est le suivant:**
+
+ **le format du fichier JSON est le suivant:**
+```json
 {"id":"salles",
  "sensors":[
      {"id_salle": `id de la salle`,
@@ -169,12 +178,15 @@ Colore les salles du plan svg chargé en rouge/vert selon la disponibilité de l
 {"id_salle": `id de la salle`,
       "value":`true`ou `false`}...
 ]}
+```
+
 
 -----------------
 \# **init_heatmap(data,title,max)**:
 Affiche une carte de chaleur dans un canvas par dessus le plan svg chargé.
 - **data** les valeurs pour la carte de chaleur
-##### **Le format des données est le suivant:**
+
+ **Le format des données est le suivant:**
 ```javascript
 /* data est une variable JSON en javascript, exemple :*/
 data = [
@@ -200,3 +212,5 @@ data = [
 -----------------
 
 
+  [1]: http://jquery.com/
+  [2]: http://d3js.org/
