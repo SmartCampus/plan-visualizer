@@ -57,6 +57,13 @@ function clear_icons(){
     $("text").remove();
 }
 
+function load_svg_jsonurl(url_svg,id,url_json,callback_load,callback_launch,args){
+    $.getJSON(url_json,function(json){
+        var string  = JSON.stringify(json);
+        load_svg(url_svg,id,string,callback_load,callback_launch,args);
+    });
+}
+
 /*
  * Fonction qui charge un ficher svg
  * et l'insère dans une code html
@@ -65,7 +72,7 @@ function clear_icons(){
  * @param url_json l'url du fichier json à utiliser pour la fonction callback
  * @param callback la fonction callback
  */
-function load_svg(url,id,url_json,callback,callback2,arg1,arg2){
+function load_svg(url,id,json,callback_load,callback_launch,args){
     /* Declarer/creer la balise svg pour le dessin vectoriel */
     svg = d3.select('body').select('#'+id).append('svg').attr('width',750).attr('height',350);
     
@@ -81,13 +88,18 @@ function load_svg(url,id,url_json,callback,callback2,arg1,arg2){
         for(var i=1;i<childs.length;i++){
             svg.node().appendChild(childs[i]);
         }
-        if(callback != undefined && url_json != undefined){
-            if(arg1 == undefined && arg2 == undefined)callback(url_json,callback2);
-            else{
-                callback(url_json,callback2,arg1);
-                callback(url_json,callback2,arg2);
+        if(callback_load != undefined){
+            for(var k=0 ; k<args.length ; k++){
+                callback_load(json,callback_launch,args[k]);
             }
         }
+    });
+}
+
+function load_and_launch_urljson(url_json,callback_launch,arg){
+    $.getJSON(url_json,function(json){
+        var string = JSON.stringify(json);
+        load_and_launch(string,callback_launch,arg);
     });
 }
 
@@ -98,16 +110,15 @@ function load_svg(url,id,url_json,callback,callback2,arg1,arg2){
  * @param callback la fonction callback à appeler
  * @param arg (option) un argument de la fonction callback
  */
-function load_and_launch(url_json,callback,arg){
-    $.getJSON( url_json, function( data ){
-        var sensors = data.sensors;
-        if(arg != undefined){
-            callback(sensors,arg);
-        }
-        else{
-            callback(sensors);
-        }
-    });
+function load_and_launch(json,callback,arg){
+    var data = $.parseJSON(json);
+    var sensors = data.sensors;
+    if(arg != undefined){
+        callback(sensors,arg);
+    } 
+    else{
+        callback(sensors);
+    }
 }
 
 /*
@@ -369,6 +380,12 @@ function update_free_rooms(salles){
     }
 }
 
+function load_data_heatmap_urljson(url_json,kind){
+    $.getJSON(url_json , function( json ){
+        var string = JSON.stringify(json);
+        load_data_heatmap(string,kind);
+    });
+}
 /*
  * Fonction qui charge les données pour 
  * une heatmap à partir d'un fichier json
@@ -376,49 +393,48 @@ function update_free_rooms(salles){
  * @param url_json l'adresse du fichier json
  * @param kind_winted le type de carte de chaleur voulu
  */
-function load_data_heatmap(url_json,kind_wanted){
-    $.getJSON( url_json , function( data ){
-        var data_heatmap = [];
-        var sensors = data.sensors;
-        var max = 40;
-        var title = "Valeur capteur : true -> 1";
-        for(i=0;i<sensors.length;i++){
-            var kind = sensors[i].kind;
-            if(kind == kind_wanted){
-                var salle_svg = $("#"+sensors[i].salle+">g").children().eq(0);
-                var balise = salle_svg.get(0).nodeName;              
-                var x_tmp,y_tmp,size_x,size_y;
-                // on affecte les valeurs de x et y selon la forme vectorielle de la salle
-                if(balise == "rect"){    
-                    size_x = parseFloat(salle_svg.attr('width'));
-                    size_y = parseFloat(salle_svg.attr('height'));
-                    x_tmp = parseFloat(salle_svg.attr('x'));
-                    y_tmp = parseFloat(salle_svg.attr('y'));
-                }
-                var value;
-                var actual_value = sensors[i].value;
-                if(kind_wanted != "temp"){
-                    if(actual_value){
-                        value = 0;
-                    }
-                    else{
-                        value = 1;
-                    }
-                    max = 1;
+function load_data_heatmap(json,kind_wanted){
+    var data = $.parseJSON(json);
+    var data_heatmap = [];
+    var sensors = data.sensors;
+    var max = 40;
+    var title = "Valeur capteur : true -> 1";
+    for(i=0;i<sensors.length;i++){
+        var kind = sensors[i].kind;
+        if(kind == kind_wanted){
+            var salle_svg = $("#"+sensors[i].salle+">g").children().eq(0);
+            var balise = salle_svg.get(0).nodeName;              
+            var x_tmp,y_tmp,size_x,size_y;
+            // on affecte les valeurs de x et y selon la forme vectorielle de la salle
+            if(balise == "rect"){    
+                size_x = parseFloat(salle_svg.attr('width'));
+                size_y = parseFloat(salle_svg.attr('height'));
+                x_tmp = parseFloat(salle_svg.attr('x'));
+                y_tmp = parseFloat(salle_svg.attr('y'));
+            }
+            var value;
+            var actual_value = sensors[i].value;
+            if(kind_wanted != "temp"){
+                if(actual_value){
+                    value = 0;
                 }
                 else{
-                    value = actual_value;
-                    title = "Température en °C";
+                    value = 1;
                 }
-                data_heatmap.push({
-                    x : x_tmp + size_x/2,
-                    y : y_tmp + size_y/2,
-                    count : value
-                });
+                max = 1;
             }
+            else{
+                value = actual_value;
+                title = "Température en °C";
+            }
+            data_heatmap.push({
+                x : x_tmp + size_x/2,
+                y : y_tmp + size_y/2,
+                count : value
+            });
         }
-        init_heatmap(data_heatmap,title,max);
-    });
+    }
+    init_heatmap(data_heatmap,title,max);
 }
 
 /*
