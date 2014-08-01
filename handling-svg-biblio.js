@@ -89,8 +89,13 @@ function load_svg(url,id,json,callback_load,callback_launch,args){
             svg.node().appendChild(childs[i]);
         }
         if(callback_load != undefined){
-            for(var couple in args){
-                callback_load(json,callback_launch,couple,args[couple]);
+            if(args == undefined){
+                callback_load(json,callback_launch);
+            }
+            else{
+                for(var couple in args){
+                    callback_load(json,callback_launch,couple,args[couple]);
+                }
             }
         }
     });
