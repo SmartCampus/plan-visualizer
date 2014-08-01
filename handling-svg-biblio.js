@@ -89,17 +89,17 @@ function load_svg(url,id,json,callback_load,callback_launch,args){
             svg.node().appendChild(childs[i]);
         }
         if(callback_load != undefined){
-            for(var k=0 ; k<args.length ; k++){
-                callback_load(json,callback_launch,args[k]);
+            for(var couple in args){
+                callback_load(json,callback_launch,couple,args[couple]);
             }
         }
     });
 }
 
-function load_and_launch_urljson(url_json,callback_launch,arg){
+function load_and_launch_urljson(url_json,callback_launch,arg,url_img){
     $.getJSON(url_json,function(json){
         var string = JSON.stringify(json);
-        load_and_launch(string,callback_launch,arg);
+        load_and_launch(string,callback_launch,arg,url_img);
     });
 }
 
@@ -110,15 +110,10 @@ function load_and_launch_urljson(url_json,callback_launch,arg){
  * @param callback la fonction callback à appeler
  * @param arg (option) un argument de la fonction callback
  */
-function load_and_launch(json,callback,arg){
+function load_and_launch(json,callback,arg,img_arg){
     var data = $.parseJSON(json);
     var sensors = data.sensors;
-    if(arg != undefined){
-        callback(sensors,arg);
-    } 
-    else{
-        callback(sensors);
-    }
+    callback(sensors,arg,img_arg);
 }
 
 /*
@@ -163,7 +158,7 @@ function unput_sensors(sensors,kind_wanted){
  * @param kind_wanted le type de capteur à ajouter sur le plan
  * @param url_json l'url du json contenant les informations sur les capteurs
  */
-function put_sensors(list_sensors,kind_wanted){
+function put_sensors(list_sensors,kind_wanted,url_img){
     var svg_node = d3.select('body').select('svg');
     for(i=0;i<list_sensors.length;i++){
         var sensor = list_sensors[i];
@@ -188,11 +183,11 @@ function put_sensors(list_sensors,kind_wanted){
         if(kind == kind_wanted){
             if((n+1) > 2){
                 // trop de capteurs à afficher -> on regroupe
-                insert_icon(kind,status,salle,bat,x,y,node_to_insert);
+                insert_icon(kind,status,salle,bat,x,y,node_to_insert,url_img);
                 update_circles(node_to_insert,salle,x,y,size_x,size_y);
             }
             else{
-                insert_icon(kind,status,salle,bat,x,y,node_to_insert);
+                insert_icon(kind,status,salle,bat,x,y,node_to_insert,url_img);
             }
         }
         relocate(salle);
@@ -286,7 +281,7 @@ function create_circle(node,room,title,x,y,width,height,number){
  * @param y la position y de la salle
  * @param node_to_insert le noeud correspondant à la salle (svg)
  */
-function insert_icon(kind,true_status,salle,bat,x,y,node_to_insert){
+function insert_icon(kind,true_status,salle,bat,x,y,node_to_insert,url_img){
     var status = true_status;
     var existing_img = $("#img-"+kind+salle);
     if(kind == "temp" || kind=="bad"){
@@ -294,13 +289,13 @@ function insert_icon(kind,true_status,salle,bat,x,y,node_to_insert){
     }
     if(existing_img.get(0) == undefined){
          node_to_insert.append("image")
-                .attr("xlink:href","./img/"+kind+"-"+status+".png")
+                .attr("xlink:href",url_img)
                 .attr('width', 20)
                 .attr('id', 'img-'+kind+salle)
                 .attr('height', 24)
                 .attr('x', x)
                 .attr('y', y)
-                .attr('title','<img alt="img-capteur" src="./img/'+kind+"-"+status+'.png" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+true_status)
+                .attr('title','<img alt="img-capteur" src="'+url_img+'" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+true_status)
                 .attr('class',kind+' img-icons');
         // info bulles
         init_tooltip("#img-"+kind+salle);
@@ -308,7 +303,7 @@ function insert_icon(kind,true_status,salle,bat,x,y,node_to_insert){
     else{
         var img = d3.select('#img-'+kind+salle);
         var title = img.attr('title');
-        img.attr('title',title+'<br/><img alt="img-capteur" src="./img/'+kind+"-"+status+'.png" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+status);
+        img.attr('title',title+'<br/><img alt="img-capteur" src="'+url_img+'" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+status);
     }
 }
 
