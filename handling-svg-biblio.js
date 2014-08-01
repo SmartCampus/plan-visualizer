@@ -381,7 +381,7 @@ function load_data_heatmap(url_json,kind_wanted){
         var data_heatmap = [];
         var sensors = data.sensors;
         var max = 40;
-        var title = "Présence capteur = 1";
+        var title = "Valeur capteur : true -> 1";
         for(i=0;i<sensors.length;i++){
             var kind = sensors[i].kind;
             if(kind == kind_wanted){
@@ -399,10 +399,10 @@ function load_data_heatmap(url_json,kind_wanted){
                 var actual_value = sensors[i].value;
                 if(kind_wanted != "temp"){
                     if(actual_value){
-                        value = 1;
+                        value = 0;
                     }
                     else{
-                        value = 0;
+                        value = 1;
                     }
                     max = 1;
                 }
@@ -432,7 +432,7 @@ function init_heatmap(data,title,max){
     // heatmap configuration
     var config = {
         element: document.getElementById("plan-select"),
-        radius: 35,
+        radius: 30,
         opacity: 50,
         legend: {
             position: 'br',
