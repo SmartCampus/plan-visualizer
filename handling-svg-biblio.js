@@ -74,7 +74,7 @@ function load_svg_jsonurl(url_svg,id,url_json,callback_load,callback_launch,args
  */
 function load_svg(url,id,json,callback_load,callback_launch,args){
     /* Declarer/creer la balise svg pour le dessin vectoriel */
-    svg = d3.select('body').select('#'+id).append('svg').attr('width',750).attr('height',350);
+    svg = d3.select('body').select('#'+id).append('svg').attr('width',750).attr('height',350).attr('id','my_svg_plan');
     
     /* Chargement du plan (format svg) et insertion
      * dans la balise svg prealablement cree
@@ -361,6 +361,9 @@ function relocate(salle){
     //}
 }
 
+function color_rooms(sensors,kind){
+}
+
 /*
  * Fonction qui affiche par un 
  * code couleur (rouge/vert)
@@ -368,7 +371,6 @@ function relocate(salle){
  * batiment
  */
 function update_free_rooms(salles){
-    var svg_node = d3.select('body').select('#plan-svg');
     for(i=0;i<salles.length;i++){
         var value = salles[i].value;
         var id_salle = salles[i].id_salle;
@@ -446,8 +448,9 @@ function load_data_heatmap(json,kind_wanted){
  */
 function init_heatmap(data,title,max){
     // heatmap configuration
+    var id = $("#my_svg_plan").parent().attr('id');
     var config = {
-        element: document.getElementById("plan-select"),
+        element: document.getElementById(id),
         radius: 30,
         opacity: 50,
         legend: {
