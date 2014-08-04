@@ -99,7 +99,8 @@ function load_svg_jsonurl(url_svg,id,url_json,callback_load,callback_launch,args
  */
 function load_svg(url,id,json,callback_load,callback_launch,args){
     /* Declarer/creer la balise svg pour le dessin vectoriel */
-    svg = d3.select('body').select('#'+id).append('svg').attr('width',750).attr('height',350).attr('id','my_svg_plan');
+    svg = d3.select('body').select('#'+id).append('svg').attr('id','my_svg_plan');
+    
     
     /* Chargement du plan (format svg) et insertion
      * dans la balise svg prealablement cree
@@ -107,6 +108,13 @@ function load_svg(url,id,json,callback_load,callback_launch,args){
     d3.xml(url,"image/svg+xml",function(xml){
         // on recupere le node 'svg' du xml recupere
         var svgNode = xml.getElementsByTagName("svg")[0];
+        var viewBox = svgNode.getAttribute('viewBox');
+        var x = svgNode.getAttribute('x');
+        var y = svgNode.getAttribute('y');
+        var width = svgNode.getAttribute('width');
+        var height = svgNode.getAttribute('heigth');
+        svg.attr('viewBox',viewBox);
+        svg.attr('x',x).attr('y',y).attr('width',width).attr('height',height);
         // on recupere la liste des elements du svg
         var childs = svgNode.childNodes;
          // pour chaque node, on l'insere dans le svg existant
