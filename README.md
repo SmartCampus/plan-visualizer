@@ -17,11 +17,11 @@ Insérer ces lignes dans votre fichier HTML pour importer la lib:
 <!-- Bibliotèque D3.js -->
 <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
 <!-- Bibliothèque HeatMap.js -->
-<script type="text/javascript" src="http://smartcampus.github.io/dashboard/svg_bibli/heatmap.js"></script>
+<script type="text/javascript" src="http://smartcampus.github.io/plan-visualizer/heatmap.js"></script>
 <!-- Le fichier javascript -->
-<script type="text/javascript" src="http://smartcampus.github.io/dashboard/svg_bibli/handling-svg-biblio.js"></script>
+<script type="text/javascript" src="http://smartcampus.github.io/plan-visualizer/handling-svg-biblio.js"></script>
 <!-- Le fichier CSS -->
-<link rel="stylesheet" href="http://smartcampus.github.io/dashboard/svg_bibli/handling-svg-biblio.css">
+<link rel="stylesheet" href="http://smartcampus.github.io/plan-visualizer/handling-svg-biblio.css">
 ```
 ---------
 

@@ -37,7 +37,7 @@ function init_tooltip(id){
    
     $(id).click(function (){
         if(clicked)return false;
-        var cross = $('body').append("<img id='cross_close' alt='cross' src='../svg_bibli/cross.png'/>");
+        var cross = $('body').append("<img id='cross_close' alt='cross' src='http://smartcampus.github.io/plan-visualizer/cross.png'/>");
         var bulle = $(".infobulle:last");
         clicked = true;
     });
