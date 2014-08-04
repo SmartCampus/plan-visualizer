@@ -1,0 +1,17 @@
+.infobulle{
+    position: absolute;
+    background: #000;
+    padding: 3px 7px;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    color:#d4d4d4;
+    text-align: center;
+    overflow-y:auto;
+    max-height: 90px;
+}
+
+#cross_close{
+    position: absolute;
+    right : 10px;
+    top: 100px;
+}
