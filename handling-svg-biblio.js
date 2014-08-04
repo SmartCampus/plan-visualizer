@@ -143,15 +143,14 @@ function unput_sensors(sensors,kind_wanted){
             x = parseFloat(salle_svg.attr('x'));
             y = parseFloat(salle_svg.attr('y'));
         }
-        if(number_icon_in(salle) == 2){
+        if(number_icon_in(salle) <= 1){
             $("#"+salle+">g>circle").remove();
             $("#"+salle+">g>text").remove();
             $("#"+salle+">g>image").show();
         }
-        else if(number_icon_in(salle) > 2){
+        else if(number_icon_in(salle) > 1){
             update_circles(node_to_insert,salle,x,y,size_x,size_y);
         }
-        relocate(salle);
     }
 
 }
@@ -186,16 +185,15 @@ function put_sensors(list_sensors,kind_wanted,url_img){
         }
         var n = number_icon_in(salle);
         if(kind == kind_wanted){
-            if((n+1) > 2){
+            if((n+1) > 1){
                 // trop de capteurs à afficher -> on regroupe
-                insert_icon(kind,status,salle,bat,x,y,node_to_insert,url_img);
+                insert_icon(kind,status,salle,bat,x,y,size_x,size_y,node_to_insert,url_img);
                 update_circles(node_to_insert,salle,x,y,size_x,size_y);
             }
             else{
-                insert_icon(kind,status,salle,bat,x,y,node_to_insert,url_img);
+                insert_icon(kind,status,salle,bat,x,y,size_x,size_y,node_to_insert,url_img);
             }
         }
-        relocate(salle);
     }
 }
 
@@ -286,7 +284,7 @@ function create_circle(node,room,title,x,y,width,height,number){
  * @param y la position y de la salle
  * @param node_to_insert le noeud correspondant à la salle (svg)
  */
-function insert_icon(kind,true_status,salle,bat,x,y,node_to_insert,url_img){
+function insert_icon(kind,true_status,salle,bat,x,y,width,height,node_to_insert,url_img){
     var status = true_status;
     var existing_img = $("#img-"+kind+salle);
     if(kind == "temp" || kind=="bad"){
@@ -298,8 +296,8 @@ function insert_icon(kind,true_status,salle,bat,x,y,node_to_insert,url_img){
                 .attr('width', 20)
                 .attr('id', 'img-'+kind+salle)
                 .attr('height', 24)
-                .attr('x', x)
-                .attr('y', y)
+                .attr('x', x+width/4)
+                .attr('y', y+height/4)
                 .attr('title','<img alt="img-capteur" src="'+url_img+'" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+true_status)
                 .attr('class',kind+' img-icons');
         // info bulles
@@ -310,55 +308,6 @@ function insert_icon(kind,true_status,salle,bat,x,y,node_to_insert,url_img){
         var title = img.attr('title');
         img.attr('title',title+'<br/><img alt="img-capteur" src="'+url_img+'" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+status);
     }
-}
-
-/*
- * Repositionne deux capteur dans une salle
- * pour un meilleur affichage
- * @param url_json l'url du json contenant les info sur les capteurs
- */
-function relocate(salle){
-    //for(i=0;i<sensors.length;i++){
-        //var salle = sensors[i].salle;
-        var size = 0;
-        var images = $("#"+salle+">g>image");
-        images.each(function(){
-            size++;
-        });
-        if(size <= 2){
-            var my_salle = $("#"+salle+">g>rect");
-            var salle_id = parseInt(salle.split("_")[1]);
-            var x_base = parseFloat($(my_salle[0]).eq(0).attr('x'));
-            var y_base = parseFloat($(my_salle[0]).eq(0).attr('y'));
-            var x_size = parseFloat($(my_salle[0]).eq(0).attr('width'));
-            var y_size = parseFloat($(my_salle[0]).eq(0).attr('height'));
-            /* la position des capteurs dépend de la position de la salle sur le plan */
-            if((salle_id == 14) || (salle_id == 40) || (salle_id>23 && salle_id<29) || (salle_id>51)){
-                $(images[1]).eq(0).attr('x',x_base + x_size/2);
-                $(images[1]).eq(0).attr('y',y_base); 
-            }
-            else{
-                $(images[1]).eq(0).attr('x',x_base);
-                $(images[1]).eq(0).attr('y',y_base + y_size/2);                    
-            }
-            $(images[0]).eq(0).attr('x',x_base);
-            $(images[0]).eq(0).attr('y',y_base);
-            if(salle_id == 29 || salle_id == 39){
-                $(images[0]).eq(0).attr('x',x_base + x_size/3);
-                $(images[0]).eq(0).attr('y',y_base + y_size/3);
-                $(images[1]).eq(0).attr('x',x_base + x_size/2);
-                $(images[1]).eq(0).attr('y',y_base + y_size*2/3);
-            }
-            if(salle_id == 13){
-                $(images[1]).eq(0).attr('x',x_base + x_size/3);
-                $(images[1]).eq(0).attr('y',y_base + y_size/3);
-            }
-            if(salle_id == 54){
-                $(images[0]).eq(0).attr('x',x_base + x_size/4);
-            }
-        }
-
-    //}
 }
 
 function color_rooms(sensors,kind){
