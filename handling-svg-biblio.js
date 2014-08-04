@@ -335,9 +335,19 @@ function insert_icon(kind,true_status,salle,bat,x,y,width,height,node_to_insert,
     }
 }
 
-function color_rooms(sensors,kind){
+function color_rooms(sensors,kind_wanted){
+    for(var i=0;i<sensors.length;i++){
+        var sensor = sensors[i];
+        var kind = sensor.kind;
+        if(kind == kind_wanted){
+            var value = sensor.value;
+            var id_salle = sensor.salle;
+            var color = (value)?"red":"green";
+            var salle_svg = d3.select('body').select("#"+id_salle+">g>rect");
+            salle_svg.style('fill',color);
+        }
+    }
 }
-
 /*
  * Fonction qui affiche par un 
  * code couleur (rouge/vert)
