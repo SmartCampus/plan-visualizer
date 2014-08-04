@@ -17,14 +17,38 @@
  * Ce title sera le texte affiché par l'infobulle
  * @param id l'id de l'élément à afficher l'infobulle
  */
+ var clicked = false;
+$("#cross_close").live('click',function(){
+    clicked = false;
+    var bulle = $(".infobulle:last");
+    bulle.animate({
+        top : bulle.offset().top+10,
+        opacity : 0
+    },500,"linear", function(){
+        bulle.remove();
+    });
+    $(this).animate({
+        opacity:0
+    },500,"linear",function(){
+        $(this).remove();
+    });
+});
 function init_tooltip(id){
+   
+    $(id).click(function (){
+        if(clicked)return false;
+        var cross = $('body').append("<img id='cross_close' alt='cross' src='../svg_bibli/cross.png'/>");
+        var bulle = $(".infobulle:last");
+        clicked = true;
+    });
     $(id).mouseover(function(){
         if($(this).attr("title") == "")return false;
+        if(clicked)return false;
         $('body').append("<span class=\"infobulle\"></span>");
         var bulle = $(".infobulle:last");
         bulle.append($(this).attr('title'));
-        var posTop = $(this).offset().top+bulle.height();
-        var posLeft = $(this).offset().left-bulle.width()/2;
+        var posTop = $('body').offset().top+100;
+        var posLeft = $('.container').offset().left+$(".container").outerWidth()*(2/3);
         bulle.css({
             left : posLeft,
             top : posTop-10,
@@ -36,6 +60,7 @@ function init_tooltip(id){
         });
     });
     $(id).mouseout(function(){
+        if(clicked)return false;
         var bulle = $(".infobulle:last");
         bulle.animate({
             top : bulle.offset().top+10,
@@ -296,8 +321,8 @@ function insert_icon(kind,true_status,salle,bat,x,y,width,height,node_to_insert,
                 .attr('width', 20)
                 .attr('id', 'img-'+kind+salle)
                 .attr('height', 24)
-                .attr('x', x+width/4)
-                .attr('y', y+height/4)
+                .attr('x', x+width/2 - 10)
+                .attr('y', y+height/2 - 10)
                 .attr('title','<img alt="img-capteur" src="'+url_img+'" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+true_status)
                 .attr('class',kind+' img-icons');
         // info bulles
