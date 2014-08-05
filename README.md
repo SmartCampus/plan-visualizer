@@ -36,7 +36,7 @@ charge un fichier svg dans un élément HTML:
 - **callback_load** (option) est la fonction qui va parser le string json en variable json javascript et ensuite appeler la fonction **callback_launch**
 - **callback_launch** (option) est la fonction qui va executer le traitement que l'on souhaite, les différentes fonctions disponibles sont :
     - put_sensors(sensors,kind,img)
-    - color_rooms(sensors) -> pas encore, bientôt...
+    - color_rooms(sensors)
     - load_data_heatmap(json,kind)
 
 - **args** (option) est un argument, c'est un tableau associatif, il contient le type à afficher et l'url de l'image à afficher, exemple :
@@ -59,8 +59,8 @@ load_svg("plan.svg","id_div",json,load_and_launch,put_sensors,{"door":"img/door.
 load_svg("plan.svg","id_div",json,load_and_launch,load_data_heatmap,{"temp":""});
 
 // colorer les salles selon un critère (pour les capteurs boolean) :
-// A FINIR ! => bientot dispo ^^
-//load_svg("plan.svg","id_div",json,load_and_launch,color_rooms,kind);
+// on veut afficher les salles libre (avec les capteurs 'motion')
+load_svg("plan.svg","id_div",json,load_and_launch,color_rooms,{"motion":""});
 ```
 -----------------
 
@@ -155,6 +155,14 @@ Enlève les images (correspondants à des capteurs) sur le fichier svg
  unput_sensors(sensors,"door");
 ```
 -----------------
+
+-> **color_rooms(sensors,kind)**
+
+- **sensors** le json contenant la liste des capteurs, leurs metadata et leur valeur actuelle (voir **put_sensors**)
+- **kind** le type de valeur sur laquelle on va colorer les salles
+
+----------
+
 
 -> **load_data_heatmap(json,kind)**:
 Affiche une carte de chaleur dans un canvas par dessus le plan svg chargé.
