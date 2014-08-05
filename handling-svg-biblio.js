@@ -324,28 +324,20 @@ function create_circle(node,room,title,x,y,width,height,number){
  */
 function insert_icon(kind,true_status,salle,bat,x,y,width,height,node_to_insert,url_img){
     var status = true_status;
-    var existing_img = $("#img-"+kind+salle);
     if(kind == "temp" || kind=="bad"){
         status = "";
     }
-    if(existing_img.get(0) == undefined){
-         node_to_insert.append("image")
-                .attr("xlink:href",url_img)
-                .attr('width', 20)
-                .attr('id', 'img-'+kind+salle)
-                .attr('height', 24)
-                .attr('x', x+width/2 - 10)
-                .attr('y', y+height/2 - 10)
-                .attr('title','<img alt="img-capteur" src="'+url_img+'" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+true_status)
-                .attr('class',kind+' img-icons');
-        // info bulles
-        init_tooltip("#img-"+kind+salle);
-    }
-    else{
-        var img = d3.select('#img-'+kind+salle);
-        var title = img.attr('title');
-        img.attr('title',title+'<br/><img alt="img-capteur" src="'+url_img+'" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+status);
-    }
+     node_to_insert.append("image")
+            .attr("xlink:href",url_img)
+            .attr('width', 20)
+            .attr('id', 'img-'+kind+salle)
+            .attr('height', 24)
+            .attr('x', x+width/2 - 10)
+            .attr('y', y+height/2 - 10)
+            .attr('title','<img alt="img-capteur" src="'+url_img+'" style="width:20px"/>capteur '+kind+' | batiment '+bat+' | salle '+salle+' | status '+true_status)
+            .attr('class',kind+' img-icons');
+    // info bulles
+    init_tooltip("#img-"+kind+salle);
 }
 
 function color_rooms(sensors,kind_wanted,tab_color){
@@ -361,23 +353,7 @@ function color_rooms(sensors,kind_wanted,tab_color){
         }
     }
 }
-/*
- * Fonction qui affiche par un 
- * code couleur (rouge/vert)
- * la disponibilité des salles d'un 
- * batiment
- */
-function update_free_rooms(salles){
-    for(i=0;i<salles.length;i++){
-        var value = salles[i].value;
-        var id_salle = salles[i].id_salle;
-        var salle_svg = d3.select('body').select("#"+id_salle+">g>rect");
-        var color = (value)?'green':'red';
-        var status = (value)?'libre':'occupée';
-        salle_svg.style('fill',color).attr('title',"Salle "+id_salle+" "+status).attr('id','salle_'+id_salle);
-        init_tooltip('#salle_'+id_salle);
-    }
-}
+
 
 function load_data_heatmap_urljson(url_json,kind){
     $.getJSON(url_json , function( json ){
