@@ -14,26 +14,25 @@ Insérer ces lignes dans votre fichier HTML pour importer la lib:
 ```html
 <!-- Jquery librairies -->
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> 
-<!-- Bibliotèque D3.js -->
+<!-- D3.js librairies -->
 <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
-<!-- Bibliothèque HeatMap.js -->
+<!-- HeatMap.js librairies -->
 <script type="text/javascript" src="http://smartcampus.github.io/plan-visualizer/heatmap.js"></script>
-<!-- Le fichier javascript -->
+<!-- Javascript file -->
 <script type="text/javascript" src="http://smartcampus.github.io/plan-visualizer/handling-svg-biblio.js"></script>
-<!-- Le fichier CSS -->
+<!-- CSS file -->
 <link rel="stylesheet" href="http://smartcampus.github.io/plan-visualizer/handling-svg-biblio.css">
 ```
 ---------
 
 ### Les fonctions
 
--> **load_svg(url_svg,id_div,json,callback_load,callback_launch,args)**:
+-> **load_svg(url_svg,id_div,json,callback_launch,args)**:
 charge un fichier svg dans un élément HTML:
 
 - **url_svg** est l'adresse **LOCALE** du fichier svg à charger
 - **id** est l'`id` de l'élément `HTML` où le fichier svg sera inséré
-- **json** (option) est un json (String) qui sera utilisé, il contient les données nécessaires aux appels de fonctions suivants
-- **callback_load** (option) est la fonction qui va parser le string json en variable json javascript et ensuite appeler la fonction **callback_launch**
+- **json** (option) est un json qui sera utilisé, il contient les données nécessaires aux appels de fonctions suivants
 - **callback_launch** (option) est la fonction qui va executer le traitement que l'on souhaite, les différentes fonctions disponibles sont :
     - put_sensors(sensors,kind,img)
     - color_rooms(sensors)
@@ -50,17 +49,18 @@ args = {"door":"img/door.png","light":"light.png"};
 /* Pour les exemples suivants, on suppose que l'on utilise le fichier svg 'plan.svg', les données json sont au format string dans la variable 'json', l'id de la div est 'id_div' */
 
 // afficher les portes et fenêtres sur le plan (les images sont dans le dossier ./img) :
-load_svg("plan.svg","id_div",json,load_and_launch,put_sensors,{"door":"img/door.png","window":"img/window.png"});
+load_svg("plan.svg","id_div",json,put_sensors,{"door":"img/door.png","window":"img/window.png"});
 
 // afficher les lumières, portes et capteurs de présence sur le plan (les images sont dans le dossier ./img) :
-load_svg("plan.svg","id_div",json,load_and_launch,put_sensors,{"door":"img/door.png","light":"img/light.png","motion":"img/motion.png"});
+load_svg("plan.svg","id_div",json,put_sensors,{"door":"img/door.png","light":"img/light.png","motion":"img/motion.png"});
 
 // afficher une carte de chaleur de la température sur le plan :
-load_svg("plan.svg","id_div",json,load_and_launch,load_data_heatmap,{"temp":""});
+load_svg("plan.svg","id_div",json,load_data_heatmap,{"temp":""});
 
 // colorer les salles selon un critère (pour les capteurs boolean) :
 // on veut afficher les salles libre (avec les capteurs 'motion')
-load_svg("plan.svg","id_div",json,load_and_launch,color_rooms,{"motion":""});
+// le tableau d'arguments est a définir comme suit : {"capteur":["couleur pour true","couleur pour false"]}
+load_svg("plan.svg","id_div",json,color_rooms,{"motion":["red","true"]});
 ```
 -----------------
 

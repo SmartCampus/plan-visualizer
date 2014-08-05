@@ -82,10 +82,9 @@ function clear_icons(){
     $("text").remove();
 }
 
-function load_svg_jsonurl(url_svg,id,url_json,callback_load,callback_launch,args){
+function load_svg_jsonurl(url_svg,id,url_json,callback_launch,args){
     $.getJSON(url_json,function(json){
-        var string  = JSON.stringify(json);
-        load_svg(url_svg,id,string,callback_load,callback_launch,args);
+        load_svg(url_svg,id,json,callback_launch,args);
     });
 }
 
@@ -97,7 +96,7 @@ function load_svg_jsonurl(url_svg,id,url_json,callback_load,callback_launch,args
  * @param url_json l'url du fichier json à utiliser pour la fonction callback
  * @param callback la fonction callback
  */
-function load_svg(url,id,json,callback_load,callback_launch,args){
+function load_svg(url,id,json,callback_launch,args){
     /* Declarer/creer la balise svg pour le dessin vectoriel */
     svg = d3.select('body').select('#'+id).append('svg').attr('id','my_svg_plan');
     
@@ -121,23 +120,22 @@ function load_svg(url,id,json,callback_load,callback_launch,args){
         for(var i=1;i<childs.length;i++){
             svg.node().appendChild(childs[i]);
         }
-        if(callback_load != undefined){
+        if(callback_launch != undefined){
             if(args == undefined){
-                callback_load(json,callback_launch);
+                parse_and_launch(json,callback_launch);
             }
             else{
                 for(var couple in args){
-                    callback_load(json,callback_launch,couple,args[couple]);
+                    parse_and_launch(json,callback_launch,couple,args[couple]);
                 }
             }
         }
     });
 }
 
-function load_and_launch_urljson(url_json,callback_launch,arg,url_img){
+function load_urljson_and_launch(url_json,callback_launch,arg,url_img){
     $.getJSON(url_json,function(json){
-        var string = JSON.stringify(json);
-        load_and_launch(string,callback_launch,arg,url_img);
+        parse_and_launch(json,callback_launch,arg,url_img);
     });
 }
 
@@ -148,8 +146,15 @@ function load_and_launch_urljson(url_json,callback_launch,arg,url_img){
  * @param callback la fonction callback à appeler
  * @param arg (option) un argument de la fonction callback
  */
-function load_and_launch(json,callback,arg,img_arg){
-    var data = $.parseJSON(json);
+function parse_and_launch(json,callback,arg,img_arg){
+    var data;
+    if(json instanceof String || typeof(json) == "string"){
+        data = $.parseJSON(json);
+        
+    }
+    else{
+        data = json;
+    }
     var sensors = data.sensors;
     callback(sensors,arg,img_arg);
 }
@@ -343,14 +348,14 @@ function insert_icon(kind,true_status,salle,bat,x,y,width,height,node_to_insert,
     }
 }
 
-function color_rooms(sensors,kind_wanted){
+function color_rooms(sensors,kind_wanted,tab_color){
     for(var i=0;i<sensors.length;i++){
         var sensor = sensors[i];
         var kind = sensor.kind;
         if(kind == kind_wanted){
             var value = sensor.value;
             var id_salle = sensor.salle;
-            var color = (value)?"red":"green";
+            var color = (value)?tab_color[0]:tab_color[1];
             var salle_svg = d3.select('body').select("#"+id_salle+">g>rect");
             salle_svg.style('fill',color);
         }
@@ -376,8 +381,7 @@ function update_free_rooms(salles){
 
 function load_data_heatmap_urljson(url_json,kind){
     $.getJSON(url_json , function( json ){
-        var string = JSON.stringify(json);
-        load_data_heatmap(string,kind);
+        parse_and_launch(json,load_data_heatmap,kind);
     });
 }
 /*
@@ -387,10 +391,8 @@ function load_data_heatmap_urljson(url_json,kind){
  * @param url_json l'adresse du fichier json
  * @param kind_winted le type de carte de chaleur voulu
  */
-function load_data_heatmap(json,kind_wanted){
-    var data = $.parseJSON(json);
+function load_data_heatmap(sensors,kind_wanted){
     var data_heatmap = [];
-    var sensors = data.sensors;
     var max = 40;
     var title = "Valeur capteur : true -> 1";
     for(i=0;i<sensors.length;i++){
