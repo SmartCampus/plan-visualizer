@@ -10,14 +10,8 @@
    ##############################################################################
    ##############################################################################*/
 
-/*
- * Fonction qui génère une infobulle 
- * pour l'élément html ayant l'id mis en 
- * paramètre et ayant un title
- * Ce title sera le texte affiché par l'infobulle
- * @param id l'id de l'élément à afficher l'infobulle
- */
- var clicked = false;
+
+var clicked = false;
 $("#cross_close").live('click',function(){
     clicked = false;
     var bulle = $(".infobulle:last");
@@ -33,6 +27,12 @@ $("#cross_close").live('click',function(){
         $(this).remove();
     });
 });
+/*
+ * Init tooltip for html element
+ * with id in argument and which
+ * have a title attribute
+ * @param id the id of the html element to display tooltip
+ */
 function init_tooltip(id){
    
     $(id).click(function (){
@@ -72,9 +72,8 @@ function init_tooltip(id){
 }
 
 /*
- * Fonction qui vide le plan
- * svg de tous les icones de 
- * de capteurs
+ * Empty the svg element from
+ * all icons, circles and text
  */
 function clear_icons(){
     $("image").remove();
@@ -89,23 +88,20 @@ function load_svg_jsonurl(url_svg,id,url_json,callback_launch,args){
 }
 
 /*
- * Fonction qui charge un ficher svg
- * et l'insère dans une code html
- * @param url l'url du fichier svg à charger
- * @param id l'id de la balise ou sera inséré le svg
- * @param url_json l'url du fichier json à utiliser pour la fonction callback
- * @param callback la fonction callback
+ * Load svg file and put it in html
+ * @param url link to the svg file
+ * @param id html id where the svg element will be inserted
+ * @param json the json file (string or JSON object) for callback function
+ * @param callback_launch function called after loading svg file
+ * @param args arguments for callback_launch (associative tab)
  */
 function load_svg(url,id,json,callback_launch,args){
     /* Declarer/creer la balise svg pour le dessin vectoriel */
     svg = d3.select('body').select('#'+id).append('svg').attr('id','my_svg_plan');
     
     
-    /* Chargement du plan (format svg) et insertion
-     * dans la balise svg prealablement cree
-     */
+    /* load svg file and insert it in html (in svg element created just before) */
     d3.xml(url,"image/svg+xml",function(xml){
-        // on recupere le node 'svg' du xml recupere
         var svgNode = xml.getElementsByTagName("svg")[0];
         var viewBox = svgNode.getAttribute('viewBox');
         var x = svgNode.getAttribute('x');
@@ -114,9 +110,9 @@ function load_svg(url,id,json,callback_launch,args){
         var height = svgNode.getAttribute('heigth');
         svg.attr('viewBox',viewBox);
         svg.attr('x',x).attr('y',y).attr('width',width).attr('height',height);
-        // on recupere la liste des elements du svg
+        // get list of children of svg element
         var childs = svgNode.childNodes;
-         // pour chaque node, on l'insere dans le svg existant
+        // for every node, put it in existing svg
         for(var i=1;i<childs.length;i++){
             svg.node().appendChild(childs[i]);
         }
@@ -140,11 +136,12 @@ function load_urljson_and_launch(url_json,callback_launch,arg,url_img){
 }
 
 /*
- * Fonction qui charge un fichier json et 
- * appelle une fonction callback
- * @param url_json l'adresse du fichier json
- * @param callback la fonction callback à appeler
- * @param arg (option) un argument de la fonction callback
+ * Parse a json file if is a String and then 
+ * call the callback function
+ * @param json the json file
+ * @param callback the callback function
+ * @param arg first arg of callback function
+ * @param img_arg second arg of callback function
  */
 function parse_and_launch(json,callback,arg,img_arg){
     var data;
@@ -160,9 +157,9 @@ function parse_and_launch(json,callback,arg,img_arg){
 }
 
 /*
- * Fonction qui supprime tous
- * les capteurs de type kind sur 
- * le plan svg
+ * Remove all sensors with kind attribute
+ * @param sensors json file with data
+ * @param kind_wanted the kind which will be removed
  */
 function unput_sensors(sensors,kind_wanted){
     d3.select('svg').selectAll("."+kind_wanted).remove();
@@ -194,11 +191,11 @@ function unput_sensors(sensors,kind_wanted){
 }
 
 /*
- * Fonction qui ajoute sur le plan svg
- * l'ensemble des capteurs de type kind
- * présent dans le json.
- * @param kind_wanted le type de capteur à ajouter sur le plan
- * @param url_json l'url du json contenant les informations sur les capteurs
+ * Add all sensors on the svg element with
+ * kind attribute
+ * @param list_sensors json file
+ * @param kind_wanted kind of data to select
+ * @param url_img the url of img resssource bind to kind_wanted
  */
 function put_sensors(list_sensors,kind_wanted,url_img){
     var svg_node = d3.select('body').select('svg');
@@ -213,8 +210,6 @@ function put_sensors(list_sensors,kind_wanted,url_img){
 
         var balise = salle_svg.get(0).nodeName;              
         var x,y,size_x,size_y;
-        // on affecte les valeurs de x et y selon la forme vectorielle de la salle
-
         if(balise == "rect"){    
             size_x = parseFloat(salle_svg.attr('width'));
             size_y = parseFloat(salle_svg.attr('height'));
@@ -224,7 +219,7 @@ function put_sensors(list_sensors,kind_wanted,url_img){
         var n = number_icon_in(salle);
         if(kind == kind_wanted){
             if((n+1) > 1){
-                // trop de capteurs à afficher -> on regroupe
+                // to much sensors to display -> regrouping
                 insert_icon(kind,status,salle,bat,x,y,size_x,size_y,node_to_insert,url_img);
                 update_circles(node_to_insert,salle,x,y,size_x,size_y);
             }
@@ -236,10 +231,9 @@ function put_sensors(list_sensors,kind_wanted,url_img){
 }
 
 /*
- * Fonction qui donne le nombre
- * de capteurs à afficher dans une salle.
- * @param room la salle à verifier
- * @return number le nombre de capteurs à afficher dans la salle
+ * Give number of sensors put in room.
+ * @param room the room to test
+ * @return number the number of sensors in room
  */
 function number_icon_in(room){
     var number = 0;
@@ -251,44 +245,41 @@ function number_icon_in(room){
 }
 
 /*
- * Fonction qui remplace l'ensemble des capteur
- * en les groupant sur un seul icone, affichant la liste de 
- * tous les capteurs dans tooltip, masque les autres capteurs
- * @param salle l'id de la salle où se situe le capteur
- * @param x la position x de la salle
- * @param y la position y de la salle
- * @param width la largeur de la salle
- * @param height la hauteur de la salle
- * @param node le noeud correspondant à la salle (svg)
+ * Update the circle in the room with the number
+ * of sensors in the room
+ * @param node the svg element binded to the room
+ * @param x coord x of the room
+ * @param y coord y of the room
+ * @param width the width of the room
+ * @param height the height of the room
+ * @param room the room 
  */
-function update_circles(node,salle,x,y,width,height){
-    var array_icons = $("#"+salle+">g>image");
+function update_circles(node,room,x,y,width,height){
+    var array_icons = $("#"+room+">g>image");
     var title = "";
-    /* on récupère les titles de tous les autres capteurs de la salle */
+    /* get all titles of all sensors of the room */
     array_icons.each(function(){
         title = title + $(this).eq(0).attr('title')+'<br/>';
         $(this).hide();
     });
-    var existing_circle = $("#circle-"+salle);
+    var existing_circle = $("#circle-"+room);
     if(existing_circle.get(0) != undefined){
         existing_circle.remove();
-        $("#text-"+salle).remove();
+        $("#text-"+room).remove();
     }
-    create_circle(node,salle,title,x,y,width,height,number_icon_in(salle));
+    create_circle(node,room,title,x,y,width,height,number_icon_in(room));
 }
 
 /*
- * Fonction qui crée le cercle avec 
- * le title donnant les informations
- * sur l'ensemble des capteurs 
- * représentés par le cercle
- * @param node le noeud svg où insérer le cercle et son texte
- * @param room l'id de la salle où le cercle sera inséré
- * @param x la position x de la salle
- * @param y la position y de la salle
- * @param width largeur de la salle
- * @param height hauteut de la salle
- * @param number le nombre de capteur groupé
+ * Function which create circle to insert 
+ * in svg element.
+ * @param node the node to insert the circle and text
+ * @param room the room
+ * @param x coord x of the room
+ * @param y coord y of the room
+ * @param width the width of the room
+ * @param height the heigth of the room
+ * @param number the number of sensors in room
  */
 function create_circle(node,room,title,x,y,width,height,number){
     node.append("text")
@@ -313,14 +304,14 @@ function create_circle(node,room,title,x,y,width,height,number){
 }
 
 /*
- * Fonction qui insère les bonnes images pour chaque capteur 
- * @param kind le type de capteur à afficher
- * @param salle l'id de la salle dans lequel sera le capteur
- * @param status l'état du capteur
- * @param bat le batiment où se situe la salle
- * @param x la position x de la salle
- * @param y la position y de la salle
- * @param node_to_insert le noeud correspondant à la salle (svg)
+ * Function which insert pictures of sensors for kind put in arg 
+ * @param kind the kind of sensors to display
+ * @param salle the room
+ * @param status state of sensor
+ * @param bat the buidling where the sensor is
+ * @param x coord x of the room
+ * @param y coord y of the room
+ * @param node_to_insert svg node to insert the pictures
  */
 function insert_icon(kind,true_status,salle,bat,x,y,width,height,node_to_insert,url_img){
     var status = true_status;
@@ -340,6 +331,13 @@ function insert_icon(kind,true_status,salle,bat,x,y,width,height,node_to_insert,
     init_tooltip("#img-"+kind+salle);
 }
 
+/*
+ * Function which color room in svg element
+ * according to a kind of sensor in argument.
+ * @param sensors json file
+ * @param kind_wanted the kind to use in color
+ * @param tab_color the colors to use
+ */
 function color_rooms(sensors,kind_wanted,tab_color){
     for(var i=0;i<sensors.length;i++){
         var sensor = sensors[i];
@@ -361,11 +359,11 @@ function load_data_heatmap_urljson(url_json,kind){
     });
 }
 /*
- * Fonction qui charge les données pour 
- * une heatmap à partir d'un fichier json
- * et afficher la heatmap.
- * @param url_json l'adresse du fichier json
- * @param kind_winted le type de carte de chaleur voulu
+ * Function which load and transform data
+ * from json to data for heatmap
+ * then display heatmap.
+ * @param sensors json file
+ * @param kind_winted the kind of values to use for heatmap
  */
 function load_data_heatmap(sensors,kind_wanted){
     var data_heatmap = [];
@@ -377,7 +375,6 @@ function load_data_heatmap(sensors,kind_wanted){
             var salle_svg = $("#"+sensors[i].salle+">g").children().eq(0);
             var balise = salle_svg.get(0).nodeName;              
             var x_tmp,y_tmp,size_x,size_y;
-            // on affecte les valeurs de x et y selon la forme vectorielle de la salle
             if(balise == "rect"){    
                 size_x = parseFloat(salle_svg.attr('width'));
                 size_y = parseFloat(salle_svg.attr('height'));
@@ -410,11 +407,10 @@ function load_data_heatmap(sensors,kind_wanted){
 }
 
 /*
- * Fonction qui affiche une heatmap
- * dans un canvas
- * @param data les données de la heatmap
- * @param title la légende de la heatmap
- * @param max la valeur max de la heatmap
+ * Init the heatmap and display it
+ * @param data data in format [{x:x,y:y,count:count}]
+ * @param title legend
+ * @param max max value for legend and display
  */
 function init_heatmap(data,title,max){
     // heatmap configuration
