@@ -4,17 +4,11 @@
     padding: 3px 7px;
     -moz-border-radius:3px;
     -webkit-border-radius:3px;
-    color:#d4d4d4;
     text-align: center;
     overflow-y:auto;
     max-height: 90px;
 }
 
-#cross_close{
-    position: absolute;
-    right : 10px;
-    top: 100px;
-}
 
 #my_svg_plan{
     width: 100%;
@@ -37,4 +31,38 @@
 canvas{
     padding-left: 20px;
     width: 790px;
+}
+
+/* Close Button */
+
+[class*='close-'] {
+    color: #777;
+    font: 14px/100% arial, sans-serif;
+    position: absolute;
+    right: 5px;
+    text-decoration: none;
+    text-shadow: 0 1px 0 #fff;
+    top: 5px;
+}
+
+.close-classic:after {
+    content: 'X'; /* ANSI X letter */
+}
+
+.close-thin:after {
+    content: '×'; /* UTF-8 symbol */
+}
+
+.close-thik:after {
+    content: '✖'; /* UTF-8 symbol */
+}
+
+/* Dialog */
+
+.dialog {
+    background: #ddd;
+    border: 1px solid #ccc ;
+    padding-right: 35px;
+    
+  
 }

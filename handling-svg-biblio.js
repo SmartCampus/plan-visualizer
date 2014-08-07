@@ -1,16 +1,4 @@
-/* ##############################################################################
-   ##############################################################################
-   #########                                                            #########
-   #########        Bibliotèque permettant d'afficher un                #########
-   #########        fichier svg et d'y insérer des éléments             #########
-   #########        (JQuery et D3.js sont nécessaires pour son          #########
-   #########        bon fonctionnement ainsi que le fichier             #########
-   #########        handling-svg-biblio.css)                            #########
-   #########                                                            #########
-   ##############################################################################
-   ##############################################################################*/
-
-
+/* event and action for tooltip cross */
 var clicked = false;
 $("#cross_close").live('click',function(){
     clicked = false;
@@ -37,18 +25,19 @@ function init_tooltip(id){
    
     $(id).click(function (){
         if(clicked)return false;
-        var cross = $('body').append("<img id='cross_close' alt='cross' src='http://smartcampus.github.io/plan-visualizer/cross.png'/>");
         var bulle = $(".infobulle:last");
-        clicked = true;
+        console.log(bulle);
+         clicked = true;
+        bulle.append("  <a href='#' id='cross_close' class='close-thik'></a>");
     });
     $(id).mouseover(function(){
         if($(this).attr("title") == "")return false;
         if(clicked)return false;
-        $('body').append("<span class=\"infobulle\"></span>");
+        $('body').append("<span class='infobulle dialog'></span>");
         var bulle = $(".infobulle:last");
         bulle.append($(this).attr('title'));
-        var posTop = $('body').offset().top+100;
-        var posLeft = $('.container').offset().left+$(".container").outerWidth()*(2/3);
+        var posTop = $('#my_svg_plan').offset().top+$('#my_svg_plan').height()+10;
+        var posLeft = $('#my_svg_plan').offset().left+50;
         bulle.css({
             left : posLeft,
             top : posTop-10,
