@@ -187,14 +187,14 @@ function unput_sensors(sensors,kind_wanted){
  * @param url_img the url of img resssource bind to kind_wanted
  */
 function put_sensors(list_sensors,kind_wanted,url_img){
-    var svg_node = d3.select('body').select('svg');
+    var svg_node = d3.select('body').select('#my_svg_plan');
     for(i=0;i<list_sensors.length;i++){
         var sensor = list_sensors[i];
         var kind = sensor.kind;
         var bat = sensor.bat;
         var status = sensor.value;
         var salle = sensor.salle;
-        var node_to_insert = d3.select('body').select('svg').select("#"+salle+">g");
+        var node_to_insert = svg_node.select("#"+salle+">g");
         var salle_svg = $("#"+salle+">g").children().eq(0);
 
         var balise = salle_svg.get(0).nodeName;              
